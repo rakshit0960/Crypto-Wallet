@@ -3,8 +3,15 @@ import Nav from "@/components/Nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const [hasAccount, setHasAccount] = useState<boolean>(false);
+  useEffect(() => {
+    if (localStorage.getItem("AccountData")) {
+      setHasAccount(true);
+    }
+  }, []);
   return (
     <>
       <Nav />
@@ -17,7 +24,7 @@ export default function Page() {
           </CardHeader>
 
           <CardContent className="flex flex-col gap-8">
-            {localStorage.getItem("AccountData") && (
+            {hasAccount && (
               <Link href="/wallet" className="w-full">
                 <Button className="w-full">Go To Wallet</Button>
               </Link>
