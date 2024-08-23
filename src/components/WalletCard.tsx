@@ -11,6 +11,9 @@ import {
 } from "./ui/card";
 import { ToastAction } from "./ui/toast";
 import { useToast } from "./ui/use-toast";
+import Image from "next/image";
+import solanaImage from "@/../public/solana.png";
+import ShowHideContent from "./ShowHideContent";
 
 interface Props {
   wallet: Wallet;
@@ -38,19 +41,41 @@ export default function WalletCard({ wallet, deleteWallet }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Solana Wallet</CardTitle>
+        <CardTitle className="flex items-center gap-4">
+          <div>Solana Wallet</div>
+          <Image src={solanaImage} alt="" width={70} height={70}></Image>
+        </CardTitle>
         <CardDescription>Wallet generated using mnemonics.</CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <div>public Key: {wallet.publicKey}</div>
-        <div>Private Key: {wallet.privateKey}</div>
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <div>public Key: </div>
+          <div>{wallet.publicKey}</div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div>Private Key: </div>
+          <ShowHideContent content={wallet.privateKey} />
+        </div>
       </CardContent>
 
       <CardFooter className="flex justify-start gap-8">
-        <Button onClick={() => copyText(wallet.publicKey, "Copied, Public Key")} variant={"outline"}>Copy Public Key</Button>
-        <Button onClick={() => copyText(wallet.privateKey, "Copied, Private Key")} variant={"outline"}>Copy Private Key</Button>
-        <Button onClick={() => deleteWallet(wallet.privateKey)} variant={"destructive"}>
+        <Button
+          onClick={() => copyText(wallet.publicKey, "Copied, Public Key")}
+          variant={"outline"}
+        >
+          Copy Public Key
+        </Button>
+        <Button
+          onClick={() => copyText(wallet.privateKey, "Copied, Private Key")}
+          variant={"outline"}
+        >
+          Copy Private Key
+        </Button>
+        <Button
+          onClick={() => deleteWallet(wallet.privateKey)}
+          variant={"destructive"}
+        >
           Delete Wallet <TrashIcon className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>

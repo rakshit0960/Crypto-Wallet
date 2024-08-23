@@ -6,9 +6,13 @@ import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { useToast } from "./ui/use-toast";
 import { SymbolIcon } from "@radix-ui/react-icons";
 
-export default function MnemonicDisplay() {
+interface Props {
+  mnemonic: string;
+  setMnemonic: (mnemonic: string) => void;
+}
+
+export default function MnemonicDisplay({ mnemonic, setMnemonic }: Props) {
   const { toast } = useToast();
-  const [mnemonic, setMnemonic] = useState<string>("");
 
   useEffect(() => {
     let newMnemonic = generateMnemonic();

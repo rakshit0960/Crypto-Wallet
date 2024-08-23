@@ -1,10 +1,7 @@
+"use client";
 import Nav from "@/components/Nav";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 
 export default function Page() {
@@ -20,6 +17,11 @@ export default function Page() {
           </CardHeader>
 
           <CardContent className="flex flex-col gap-8">
+            {localStorage.getItem("AccountData") && (
+              <Link href="/wallet" className="w-full">
+                <Button className="w-full">Go To Wallet</Button>
+              </Link>
+            )}
             <Link href="/create" className="w-full">
               <Button className="w-full">Create Wallet</Button>
             </Link>
@@ -27,7 +29,6 @@ export default function Page() {
               <Button className="w-full">Import Wallet</Button>
             </Link>
           </CardContent>
-
         </Card>
       </div>
     </>
