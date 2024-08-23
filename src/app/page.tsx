@@ -12,6 +12,7 @@ export default function Page() {
       setHasAccount(true);
     }
   }, []);
+
   return (
     <>
       <Nav />
