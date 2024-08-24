@@ -1,12 +1,16 @@
 services:
-  nextjs:
+  web:
     build: .
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
     ports:
-      - "3000:3000"
+      - 3000:3000
     develop:
       watch:
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
         - action: sync
           path: .
           target: /app

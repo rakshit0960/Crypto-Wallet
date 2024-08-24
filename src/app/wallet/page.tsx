@@ -1,5 +1,4 @@
 "use client";
-
 import Nav from "@/components/Nav";
 import { Button } from "@/components/ui/button";
 import { ToastAction } from "@/components/ui/toast";
@@ -27,7 +26,7 @@ export default function Page() {
       return;
     }
     const account: Account = JSON.parse(localData);
-    SetAccount({...account});
+    SetAccount({ ...account });
 
     if (account.wallets.length == 0) {
       const seed = mnemonicToSeedSync(account.mnemonic);
@@ -41,7 +40,7 @@ export default function Page() {
         mnemonic: account.mnemonic,
       });
 
-      SetAccount({...account});
+      SetAccount({ ...account });
       localStorage.setItem("AccountData", JSON.stringify(account));
     }
   }, []);
@@ -51,7 +50,7 @@ export default function Page() {
     account.wallets = account?.wallets.filter(
       (wallet) => wallet.privateKey !== privateKey
     );
-    SetAccount({...account});
+    SetAccount({ ...account });
     localStorage.setItem("AccountData", JSON.stringify(account));
   }
 
@@ -79,12 +78,16 @@ export default function Page() {
       privateKey: base58.encode(Keypair.fromSecretKey(secret).secretKey),
       mnemonic: mnemonic,
     });
-    SetAccount({...account});
+    SetAccount({ ...account });
     localStorage.setItem("AccountData", JSON.stringify(account));
   };
 
   if (account == null) {
-    return <SymbolIcon className="animate-spin h-100" width="40" height="40" />;
+    return (
+      <div className="w-full h-screen grid place-content-center">
+        <SymbolIcon className="animate-spin h-100" width="40" height="40" />
+      </div>
+    );
   }
 
   return (
