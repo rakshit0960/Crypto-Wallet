@@ -26,6 +26,7 @@ export default function Page() {
     }
 
     const account: Account = {
+      walletCount: 0,
       mnemonic: mnemonic,
       wallets: []
     }

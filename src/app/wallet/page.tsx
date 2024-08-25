@@ -1,24 +1,32 @@
 "use client";
+import solanaImage from "@/../public/solana.png";
+import CopyButton from "@/components/CopyButton";
 import Nav from "@/components/Nav";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
-import WalletCard from "@/components/WalletCard";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import WalletComponent from "@/components/WalletComponent";
+import { createSolanaWallet } from "@/lib/helpers";
 import { Account } from "@/lib/interfaces";
 import { SymbolIcon } from "@radix-ui/react-icons";
-import { Keypair } from "@solana/web3.js";
-import { mnemonicToSeedSync, validateMnemonic } from "bip39";
-import base58 from "bs58";
-import { derivePath } from "ed25519-hd-key";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import nacl from "tweetnacl";
+import { FaArrowDown, FaArrowUp } from "react-icons/fa";
+import { IoSwapHorizontal } from "react-icons/io5";
 
 export default function Page() {
-  const { toast } = useToast();
   const router = useRouter();
   const [account, SetAccount] = useState<Account | null>(null);
-
+  const [walletIndex, setWalletIndex] = useState<number>(0);
+  
   useEffect(() => {
     const localData = localStorage.getItem("AccountData");
     if (localData == null) {
@@ -29,17 +37,9 @@ export default function Page() {
     SetAccount({ ...account });
 
     if (account.wallets.length == 0) {
-      const seed = mnemonicToSeedSync(account.mnemonic);
-      const path = `m/44'/501'/0'/0'`; // This is the derivation path for solana
-      const derivedSeed = derivePath(path, seed.toString("hex")).key;
-      const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
+      account.wallets.push(createSolanaWallet(account.mnemonic, 0));
 
-      account.wallets.push({
-        publicKey: Keypair.fromSecretKey(secret).publicKey.toBase58(),
-        privateKey: base58.encode(Keypair.fromSecretKey(secret).secretKey),
-        mnemonic: account.mnemonic,
-      });
-
+      account.walletCount++;
       SetAccount({ ...account });
       localStorage.setItem("AccountData", JSON.stringify(account));
     }
@@ -54,30 +54,14 @@ export default function Page() {
     localStorage.setItem("AccountData", JSON.stringify(account));
   }
 
-  const addWallet = () => {
+  function addWallet() {
     if (account == null) return;
     let mnemonic = account.mnemonic;
 
-    // if mnemonic is not valid show error tost
-    if (validateMnemonic(mnemonic) === false) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "The Mnemonic entered is not valid.",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-      });
-      return;
-    }
-    const seed = mnemonicToSeedSync(mnemonic);
-    const path = `m/44'/501'/${account.wallets.length}'/0'`; // This is the derivation path for solana
-    const derivedSeed = derivePath(path, seed.toString("hex")).key;
-    const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
-
-    account.wallets.push({
-      publicKey: Keypair.fromSecretKey(secret).publicKey.toBase58(),
-      privateKey: base58.encode(Keypair.fromSecretKey(secret).secretKey),
-      mnemonic: mnemonic,
-    });
+    account.wallets.push(
+      createSolanaWallet(account.mnemonic, account.walletCount)
+    );
+    account.walletCount++;
     SetAccount({ ...account });
     localStorage.setItem("AccountData", JSON.stringify(account));
   };
@@ -93,19 +77,65 @@ export default function Page() {
   return (
     <>
       <Nav />
-      <div className="flex flex-col gap-10 py-10 px-[12%]">
-        <Button variant={"secondary"} onClick={addWallet}>
-          Add Wallet
-        </Button>
-        <div className="flex flex-col gap-10">
-          {account.wallets.map((wallet, index) => (
-            <WalletCard
-              key={index}
-              wallet={wallet}
-              deleteWallet={deleteWallet}
-            />
-          ))}
-        </div>
+      <div className="w-full h-screen grid place-content-center">
+        <Card className="px-4 flex flex-col gap-10 w-[450px]">
+          <CardHeader>
+            <CardTitle className="flex flex-col items-center gap-2">
+              <Image src={solanaImage} width={100} alt="" />
+              <div>0.00 SOL</div>
+            </CardTitle>
+            <CardDescription className="text-center">
+              {account.wallets[walletIndex].publicKey}
+            </CardDescription>
+            <div className="flex justify-center gap-10">
+              <div className="flex flex-col items-center">
+                <Button id="send" className="rounded-full" variant={"outline"}>
+                  <FaArrowUp />
+                </Button>
+                <label htmlFor="send">Send</label>
+              </div>
+              <div className="flex flex-col items-center">
+                <Button className="rounded-full" variant={"outline"}>
+                  <FaArrowDown />
+                </Button>
+                <label htmlFor="send">Receive</label>
+              </div>
+              <div className="flex flex-col items-center">
+                <Button className="rounded-full" variant={"outline"}>
+                  <IoSwapHorizontal />
+                </Button>
+                <label htmlFor="send">Swap</label>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-72 rounded-md ">
+              <div className=" flex flex-col gap-2">
+                {account.wallets.map((wallet, index) => {
+                  if (index == walletIndex) return;
+                  return (
+                    <WalletComponent
+                      changeWallet={() => setWalletIndex(index)}
+                      onDelete={deleteWallet}
+                      key={wallet.publicKey}
+                      wallet={wallet}
+                      index={index}
+                    />
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </CardContent>
+          <CardFooter className="flex justify-around">
+            <Button onClick={addWallet}>Add Wallet</Button>
+            <CopyButton
+              text={account.wallets[walletIndex].privateKey}
+              message="copied, private key"
+            >
+              <Button variant={"outline"}>copy Private Key</Button>
+            </CopyButton>
+          </CardFooter>
+        </Card>
       </div>
     </>
   );

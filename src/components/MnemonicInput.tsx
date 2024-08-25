@@ -9,6 +9,7 @@ import { useState } from "react";
 import nacl from "tweetnacl";
 import { Button } from "./ui/button";
 import bs58 from 'bs58';
+import { createSolanaWallet } from "@/lib/helpers";
 
 interface Props {
   wallets: Wallet[];
@@ -42,20 +43,9 @@ export default function MnemonicInput({ wallets, setWallets }: Props) {
       })
       return;
     }
-
-    const seed = mnemonicToSeedSync(mnemonic);
-    const path = `m/44'/501'/${walletsCount}'/0'`; // This is the derivation path for solana
-    const derivedSeed = derivePath(path, seed.toString("hex")).key;
-    const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
-
-    const newWallet: Wallet = {
-      publicKey: Keypair.fromSecretKey(secret).publicKey.toBase58(),
-      privateKey: bs58.encode(Keypair.fromSecretKey(secret).secretKey),
-      mnemonic: mnemonic
-    }
-
+    
     const newWalletList = [...wallets];
-    newWalletList.push(newWallet);
+    newWalletList.push(createSolanaWallet(mnemonic, walletsCount));
     setWallets(newWalletList);
     setWalletsCount(walletsCount + 1);
   };

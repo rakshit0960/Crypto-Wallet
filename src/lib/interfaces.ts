@@ -7,5 +7,6 @@ export interface Wallet {
 
 export interface Account {
   mnemonic: string
+  walletCount: number
   wallets: Wallet[];
 }
