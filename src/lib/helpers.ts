@@ -1,4 +1,4 @@
-import { Keypair } from "@solana/web3.js";
+import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { mnemonicToSeedSync } from "bip39";
 import base58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
@@ -17,4 +17,13 @@ export function createSolanaWallet(mnemonic: string, walletIndex: number): Walle
     privateKey: base58.encode(Keypair.fromSecretKey(secret).secretKey),
     mnemonic: mnemonic,
   };
+}
+
+
+export async function fetchSolBalance(publicKey: string) {
+  const response = await fetch(`/api/sol/balance/${publicKey}`);
+  const data = await response.json();
+  console.log(data);
+  const balance = parseInt(data.result.value) / LAMPORTS_PER_SOL;
+  return balance
 }

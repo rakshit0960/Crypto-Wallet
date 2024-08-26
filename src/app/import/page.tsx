@@ -1,13 +1,7 @@
-"use client";
 import MnemonicInput from "@/components/MnemonicInput";
 import Nav from "@/components/Nav";
-import WalletList from "@/components/WalletList";
-import { Wallet } from "@/lib/interfaces";
-import { useState } from "react";
 
 export default function Home() {
-  const [Wallets, setWallets] = useState<Wallet[]>([]);
-
   return (
     <>
       <Nav />
@@ -19,8 +13,7 @@ export default function Home() {
           Enter your 12 word phrase. or leave empty to generate a
           random phrase.
         </p>
-        <MnemonicInput wallets={Wallets} setWallets={setWallets} />
-        <WalletList wallets={Wallets} setWallets={setWallets}/>
+        <MnemonicInput  />
       </div>
     </>
   );

@@ -1,25 +1,18 @@
 "use client";
 import { useToast } from "@/components/ui/use-toast";
-import { Wallet } from "@/lib/interfaces";
-import { ToastAction } from "@radix-ui/react-toast";
-import { Keypair } from "@solana/web3.js";
-import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from "bip39";
-import { derivePath } from "ed25519-hd-key";
-import { useState } from "react";
-import nacl from "tweetnacl";
-import { Button } from "./ui/button";
-import bs58 from 'bs58';
 import { createSolanaWallet } from "@/lib/helpers";
+import { Account } from "@/lib/interfaces";
+import { ToastAction } from "@radix-ui/react-toast";
+import { generateMnemonic, validateMnemonic } from "bip39";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
-interface Props {
-  wallets: Wallet[];
-  setWallets: (wallets: Wallet[]) => void;
-}
 
-export default function MnemonicInput({ wallets, setWallets }: Props) {
+export default function MnemonicInput() {
   const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const { toast } = useToast()
-  const [walletsCount, setWalletsCount] = useState<number>(0);
+  const router = useRouter();
   const [mnemonicArray, setMnemonicArray] = useState<string[]>(
     Array.from(" ".repeat(12))
   );
@@ -43,11 +36,14 @@ export default function MnemonicInput({ wallets, setWallets }: Props) {
       })
       return;
     }
-    
-    const newWalletList = [...wallets];
-    newWalletList.push(createSolanaWallet(mnemonic, walletsCount));
-    setWallets(newWalletList);
-    setWalletsCount(walletsCount + 1);
+
+    const account: Account = {
+      walletCount: 1,
+      mnemonic: mnemonic,
+      wallets: [createSolanaWallet(mnemonic, 0)]
+    }
+    localStorage.setItem('AccountData', JSON.stringify(account));
+    router.push('/wallet')
   };
 
   return (
