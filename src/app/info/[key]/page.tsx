@@ -21,7 +21,7 @@ export default function Page({ params }: { params: { key: string } }) {
 
   useEffect(() => {
     fetchInfo(params.key).then((info) => setWalletInfo(info));
-  }, []);i
+  }, []);
 
   return <div>{walletInfo && JSON.stringify(walletInfo)}</div>;
 }
