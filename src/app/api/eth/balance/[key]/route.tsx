@@ -5,7 +5,6 @@ export async function GET(
   { params }: { params: { key: string } }
 ) {
   const url = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`;
-  console.log(params);
   const { key } = params;
   const response = await fetch(url, {
     method: "POST",

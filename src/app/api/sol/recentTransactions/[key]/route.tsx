@@ -15,8 +15,10 @@ export async function GET(
     body: JSON.stringify({
       jsonrpc: "2.0",
       id: 1,
-      method: "getBalance",
-      params: [publicKey],
+      method: "getSignaturesForAddress",
+      params: [publicKey, {
+        "limit": 5
+      }],
     }),
   });
 

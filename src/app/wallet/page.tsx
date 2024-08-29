@@ -2,17 +2,20 @@
 import solanaImage from "@/../public/solana.png";
 import CopyButton from "@/components/CopyButton";
 import Nav from "@/components/Nav";
+import ReceiveButton from "@/components/ReceiveButton";
+import SendButton from "@/components/SendButton";
+import TransactionTabContent from "@/components/TransactionTabContent";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import WalletComponent from "@/components/WalletComponent";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WalletTabContent from "@/components/WalletTabContent";
 import { createSolanaWallet, fetchSolBalance } from "@/lib/helpers";
 import { Account } from "@/lib/interfaces";
 import { SymbolIcon } from "@radix-ui/react-icons";
@@ -26,9 +29,9 @@ export default function Page() {
   const router = useRouter();
   const [account, SetAccount] = useState<Account | null>(null);
   const [walletIndex, setWalletIndex] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(0);
+  const [balance, setBalance] = useState<number | null>(null);
 
-  useEffect(  () => {
+  useEffect(() => {
     const localData = localStorage.getItem("AccountData");
     if (localData == null) {
       router.push("/");
@@ -44,8 +47,14 @@ export default function Page() {
       SetAccount({ ...account });
       localStorage.setItem("AccountData", JSON.stringify(account));
     }
-    fetchSolBalance(account.wallets[walletIndex].publicKey).then(balance => setBalance(balance));
   }, []);
+
+  useEffect(() => {
+    if (account == null) return;
+    fetchSolBalance(account.wallets[walletIndex].publicKey).then((balance) =>
+      setBalance(balance)
+    );
+  }, [walletIndex, account]);
 
   function deleteWallet(privateKey: string) {
     if (account == null) return;
@@ -65,7 +74,7 @@ export default function Page() {
     account.walletCount++;
     SetAccount({ ...account });
     localStorage.setItem("AccountData", JSON.stringify(account));
-  };
+  }
 
   if (account == null) {
     return (
@@ -83,24 +92,25 @@ export default function Page() {
           <CardHeader>
             <CardTitle className="flex flex-col items-center gap-2">
               <Image src={solanaImage} width={100} alt="" />
-              <div>{balance} SOL</div>
+              <div className="flex gap-2">
+                {balance !== null ? (
+                  <div>{balance}</div>
+                ) : (
+                  <SymbolIcon
+                    className="animate-spin h-100"
+                    width="23"
+                    height="23"
+                  />
+                )}{" "}
+                SOL
+              </div>
             </CardTitle>
             <CardDescription className="text-center">
               {account.wallets[walletIndex].publicKey}
             </CardDescription>
             <div className="flex justify-center gap-10">
-              <div className="flex flex-col items-center">
-                <Button id="send" className="rounded-full" variant={"outline"}>
-                  <FaArrowUp />
-                </Button>
-                <label htmlFor="send">Send</label>
-              </div>
-              <div className="flex flex-col items-center">
-                <Button className="rounded-full" variant={"outline"}>
-                  <FaArrowDown />
-                </Button>
-                <label htmlFor="send">Receive</label>
-              </div>
+                <SendButton />
+                <ReceiveButton />
               <div className="flex flex-col items-center">
                 <Button className="rounded-full" variant={"outline"}>
                   <IoSwapHorizontal />
@@ -110,32 +120,35 @@ export default function Page() {
             </div>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-72 rounded-md ">
-              <div className=" flex flex-col gap-2">
-                {account.wallets.map((wallet, index) => {
-                  if (index == walletIndex) return;
-                  return (
-                    <WalletComponent
-                      changeWallet={() => setWalletIndex(index)}
-                      onDelete={deleteWallet}
-                      key={wallet.publicKey}
-                      wallet={wallet}
-                      index={index}
-                    />
-                  );
-                })}
-              </div>
-            </ScrollArea>
+            <Tabs defaultValue="Wallets">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="Wallets">Wallets</TabsTrigger>
+                <TabsTrigger value="Transaction">Transactions</TabsTrigger>
+              </TabsList>
+              <TabsContent value="Wallets">
+                <WalletTabContent
+                  account={account}
+                  setWalletIndex={setWalletIndex}
+                  walletIndex={walletIndex}
+                  deleteWallet={deleteWallet}
+                  setBalance={setBalance}
+                />
+                <div className="flex justify-around py-4">
+
+                <Button onClick={addWallet}>Add Wallet</Button>
+                <CopyButton
+                  text={account.wallets[walletIndex].privateKey}
+                  message="copied, private key"
+                >
+                  <Button variant={"outline"}>copy Private Key</Button>
+                </CopyButton>
+                  </div>
+              </TabsContent>
+              <TabsContent value="Transaction">
+                <TransactionTabContent publicKey={account.wallets[walletIndex].publicKey} />
+              </TabsContent>
+            </Tabs>
           </CardContent>
-          <CardFooter className="flex justify-around">
-            <Button onClick={addWallet}>Add Wallet</Button>
-            <CopyButton
-              text={account.wallets[walletIndex].privateKey}
-              message="copied, private key"
-            >
-              <Button variant={"outline"}>copy Private Key</Button>
-            </CopyButton>
-          </CardFooter>
         </Card>
       </div>
     </>

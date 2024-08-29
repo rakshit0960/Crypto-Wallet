@@ -4,7 +4,7 @@ import { createSolanaWallet } from "@/lib/helpers";
 import { Account } from "@/lib/interfaces";
 import { ToastAction } from "@radix-ui/react-toast";
 import { generateMnemonic, validateMnemonic } from "bip39";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 
@@ -16,6 +16,20 @@ export default function MnemonicInput() {
   const [mnemonicArray, setMnemonicArray] = useState<string[]>(
     Array.from(" ".repeat(12))
   );
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      if (e.clipboardData == null) return;
+      let paste = e.clipboardData.getData("text");
+      console.log(paste);
+      let newMnemonicArray = [...mnemonicArray];
+      paste.split(' ').map(((word, index) => newMnemonicArray[index] = word));
+      setMnemonicArray(newMnemonicArray);
+    }
+    window.addEventListener('paste', handlePaste);
+
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [])
 
   const addWallet = () => {
     let mnemonic = mnemonicArray.join(" ");

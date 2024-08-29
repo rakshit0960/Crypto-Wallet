@@ -10,3 +10,10 @@ export interface Account {
   walletCount: number
   wallets: Wallet[];
 }
+
+export interface Transaction {
+  blockTime: number
+  confirmationStatus: string
+  signature: string
+  slot: number
+}
