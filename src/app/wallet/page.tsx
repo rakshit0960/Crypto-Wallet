@@ -11,9 +11,8 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WalletTabContent from "@/components/WalletTabContent";
 import { createSolanaWallet, fetchSolBalance } from "@/lib/helpers";
@@ -22,7 +21,6 @@ import { SymbolIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { IoSwapHorizontal } from "react-icons/io5";
 
 export default function Page() {
@@ -109,8 +107,10 @@ export default function Page() {
               {account.wallets[walletIndex].publicKey}
             </CardDescription>
             <div className="flex justify-center gap-10">
-                <SendButton />
-                <ReceiveButton />
+              <SendButton
+                privateKey={account.wallets[walletIndex].privateKey}
+              />
+              <ReceiveButton publicKey={account.wallets[walletIndex].publicKey} />
               <div className="flex flex-col items-center">
                 <Button className="rounded-full" variant={"outline"}>
                   <IoSwapHorizontal />
@@ -134,18 +134,19 @@ export default function Page() {
                   setBalance={setBalance}
                 />
                 <div className="flex justify-around py-4">
-
-                <Button onClick={addWallet}>Add Wallet</Button>
-                <CopyButton
-                  text={account.wallets[walletIndex].privateKey}
-                  message="copied, private key"
-                >
-                  <Button variant={"outline"}>copy Private Key</Button>
-                </CopyButton>
-                  </div>
+                  <Button onClick={addWallet}>Add Wallet</Button>
+                  <CopyButton
+                    text={account.wallets[walletIndex].privateKey}
+                    message="copied, private key"
+                  >
+                    <Button variant={"outline"}>copy Private Key</Button>
+                  </CopyButton>
+                </div>
               </TabsContent>
               <TabsContent value="Transaction">
-                <TransactionTabContent publicKey={account.wallets[walletIndex].publicKey} />
+                <TransactionTabContent
+                  publicKey={account.wallets[walletIndex].publicKey}
+                />
               </TabsContent>
             </Tabs>
           </CardContent>

@@ -2,14 +2,14 @@ import {
   fetchSolRecentTransactions,
   unixTimestampToLocalDateTime,
 } from "@/lib/helpers";
-import { Transaction } from "@/lib/interfaces";
-import { useEffect, useState } from "react";
-import { ScrollArea } from "./ui/scroll-area";
 import { SymbolIcon } from "@radix-ui/react-icons";
-import { Card, CardContent, CardHeader } from "./ui/card";
-import { Button } from "./ui/button";
 import { Copy } from "lucide-react";
+import { useEffect, useState } from "react";
 import CopyButton from "./CopyButton";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader } from "./ui/card";
+import { ScrollArea } from "./ui/scroll-area";
+import { Transaction } from "@/lib/interfaces";
 
 interface Props {
   publicKey: string;
@@ -43,9 +43,11 @@ export default function TransactionTabContent({ publicKey }: Props) {
                   </div>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
+                  <a href={`https://explorer.solana.com/tx/${transaction.signature}`}>
                   <Button variant="link">
                     {transaction.signature.substring(0, 23)}...
                   </Button>
+                  </a>
                   <CopyButton
                     text={transaction.signature}
                     message="successfully copied transaction signature"
