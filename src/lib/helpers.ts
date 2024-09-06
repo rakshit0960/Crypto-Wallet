@@ -84,6 +84,10 @@ export async function createAndSendTransaction(
     (await connection.getBalance(sender.publicKey)) / LAMPORTS_PER_SOL
   );
 
+  const balance = (await connection.getBalance(sender.publicKey)) / LAMPORTS_PER_SOL;
+  if (balance <  amount) throw new Error("Insufficient Balance");
+
+
   const { blockhash, lastValidBlockHeight } =
     await connection.getLatestBlockhash();
 
