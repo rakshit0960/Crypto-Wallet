@@ -36,9 +36,11 @@ export async function fetchSolBalance(publicKey: string) {
     if (data.error) throw new Error(data.error.message);
     console.log(data);
     const balance = parseInt(data.result.value) / LAMPORTS_PER_SOL;
+    if (!balance) return null;
     return balance;
   } catch (error) {
     console.log(error);
+    return null;
   }
 }
 
