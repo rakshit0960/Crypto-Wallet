@@ -38,12 +38,13 @@ export default function SendButton({ privateKey }: Props) {
       toast({
         title: res
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Uh oh! Something went wrong.",
-        description: "unexpected error",
+        description: error.transactionMessage,
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       })
+      console.log(JSON.stringify(error))
       console.log('error', error);
     } finally {
       setIsSending(false);

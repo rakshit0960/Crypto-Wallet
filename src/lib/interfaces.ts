@@ -11,7 +11,7 @@ export interface Account {
   wallets: Wallet[];
 }
 
-export interface Transaction {
+export interface TransactionI {
   blockTime: number
   confirmationStatus: string
   signature: string

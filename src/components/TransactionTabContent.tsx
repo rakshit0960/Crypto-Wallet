@@ -9,14 +9,14 @@ import CopyButton from "./CopyButton";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
-import { Transaction } from "@/lib/interfaces";
+import { TransactionI } from "@/lib/interfaces";
 
 interface Props {
   publicKey: string;
 }
 
 export default function TransactionTabContent({ publicKey }: Props) {
-  const [Transactions, setTransactions] = useState<Transaction[] | null>(null);
+  const [Transactions, setTransactions] = useState<TransactionI[] | null>(null);
 
   useEffect(() => {
     fetchSolRecentTransactions(publicKey).then((data) => setTransactions(data));
@@ -44,9 +44,9 @@ export default function TransactionTabContent({ publicKey }: Props) {
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
                   <a href={`https://explorer.solana.com/tx/${transaction.signature}`}>
-                  <Button variant="link">
-                    {transaction.signature.substring(0, 23)}...
-                  </Button>
+                    <Button variant="link">
+                      {transaction.signature.substring(0, 23)}...
+                    </Button>
                   </a>
                   <CopyButton
                     text={transaction.signature}
