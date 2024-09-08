@@ -9,16 +9,18 @@ export default function CopyButton({
 }: {
   children: ReactNode;
   text: string;
-  message: string;
+  message?: string;
 }) {
   const { toast } = useToast();
 
-  const copyText = (text: string, message: string) => {
+  const copyText = (text: string, message?: string) => {
     try {
       navigator.clipboard.writeText(text);
-      toast({
-        description: message,
-      });
+      if (message) {
+        toast({
+          description: message,
+        });
+      }
     } catch (error) {
       toast({
         variant: "destructive",

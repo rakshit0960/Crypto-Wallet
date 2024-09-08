@@ -4,7 +4,7 @@ import Nav from "@/components/Nav";
 import { Button } from "@/components/ui/button";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import { Account } from "@/lib/interfaces";
+import { Account } from "@/types/interfaces";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -39,7 +39,7 @@ export default function Page() {
       <Nav />
       <div className="py-8 w-full h-screen flex flex-col gap-10 items-center px-[10%]">
         <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-           Recovery Phrase
+          Recovery Phrase
         </h2>
         <p className="text-xl text-muted-foreground">
           Save these words in a safe place.

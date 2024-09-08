@@ -1,7 +1,8 @@
 import { createAndSendTransaction } from "@/lib/helpers";
-import { SymbolIcon } from "@radix-ui/react-icons";
+import { useStore } from "@/store/store";
 import { useState } from "react";
 import { FaArrowUp } from "react-icons/fa";
+import { useShallow } from "zustand/react/shallow";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -24,7 +25,14 @@ export default function SendButton({ privateKey }: Props) {
   const [amount, setAmount] = useState<number>(0);
   const [receiverPubKey, setReceiverPubKey] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean | null>(null);
   const { toast } = useToast();
+  const { network, setNetwork } = useStore(
+    useShallow((state) => ({
+      network: state.network,
+      setNetwork: state.setNetwork,
+    }))
+  );
 
   async function sendSol() {
     try {
@@ -32,21 +40,26 @@ export default function SendButton({ privateKey }: Props) {
       const res = await createAndSendTransaction(
         privateKey,
         receiverPubKey,
-        amount
+        amount,
+        network
       );
-      console.log('success', res);
+      console.log("success", res);
       toast({
-        title: res
+        title: `successful sent ${amount}!`,
+        description: `transaction signature: ${res}`,
       });
+      setSuccess(true);
     } catch (error: any) {
       toast({
         title: "Uh oh! Something went wrong.",
         description: error.message || error.transactionMessage,
         action: <ToastAction altText="Try again">Try again</ToastAction>,
-      })
-      console.log(JSON.stringify(error))
-      console.log('error', error);
+      });
+      console.log(JSON.stringify(error));
+      console.log("error", error);
+      setSuccess(false);
     } finally {
+      setNetwork(network); // tiger re-render
       setIsSending(false);
     }
   }
@@ -66,7 +79,7 @@ export default function SendButton({ privateKey }: Props) {
           </label>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="">
         <DialogHeader>
           <DialogTitle>Send Solana</DialogTitle>
           <DialogDescription>
@@ -100,18 +113,22 @@ export default function SendButton({ privateKey }: Props) {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={sendSol}>
-            {isSending ? (
-              <SymbolIcon
-                className="animate-spin h-100"
-                width="25"
-                height="40"
-              />
-            ) : (
-              "Send"
-            )}
-          </Button>
+          {isSending ? (
+            <Button disabled>sending...</Button>
+          ) : (
+            <Button onClick={sendSol}>Send</Button>
+          )}
         </DialogFooter>
+        {success === true && (
+          <p className="mt-4 text-green-500">
+            Transaction successful! Check your wallet.
+          </p>
+        )}
+        {success === false && (
+          <p className="mt-4 text-red-500">
+            Transaction failed. Please try again.
+          </p>
+        )}
       </DialogContent>
     </Dialog>
   );

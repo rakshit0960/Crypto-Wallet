@@ -4,7 +4,6 @@ export interface Wallet {
   mnemonic: string;
 }
 
-
 export interface Account {
   mnemonic: string
   walletCount: number

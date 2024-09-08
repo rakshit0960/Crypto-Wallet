@@ -1,4 +1,7 @@
+import { Network } from "@/types/network";
 import {
+  clusterApiUrl,
+  ConfirmedSignatureInfo,
   Connection,
   Keypair,
   LAMPORTS_PER_SOL,
@@ -11,8 +14,7 @@ import { mnemonicToSeedSync } from "bip39";
 import base58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
-import { TransactionI, Wallet } from "./interfaces";
-import { toast } from "@/components/ui/use-toast";
+import { Wallet } from "../types/interfaces";
 
 export function createSolanaWallet(
   mnemonic: string,
@@ -30,14 +32,20 @@ export function createSolanaWallet(
   };
 }
 
-export async function fetchSolBalance(publicKey: string) {
+export async function fetchSolBalance(publicKey: string, network: Network) {
   try {
-    const response = await fetch(`/api/sol/balance/${publicKey}`);
-    const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-    console.log(data);
-    const balance = parseInt(data.result.value) / LAMPORTS_PER_SOL;
-    return balance;
+    if (network == "mainnet") {
+      const response = await fetch(`/api/sol/balance/${publicKey}`);
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+      console.log(data);
+      const balance = parseInt(data.result.value) / LAMPORTS_PER_SOL;
+      return balance;
+    } else {
+      const connection = new Connection(clusterApiUrl("devnet"));
+      const balance = await connection.getBalance(new PublicKey(publicKey)) / LAMPORTS_PER_SOL;
+      return balance;
+    }
   } catch (error) {
     console.log(error);
     return 0;
@@ -45,11 +53,20 @@ export async function fetchSolBalance(publicKey: string) {
 }
 
 export async function fetchSolRecentTransactions(
-  publicKey: string
-): Promise<TransactionI[]> {
-  const response = await fetch(`/api/sol/recentTransactions/${publicKey}`);
-  const data = await response.json();
-  return data.result;
+  publicKey: string,
+  network: Network
+): Promise<ConfirmedSignatureInfo[]> {
+  if (network == "mainnet") {
+    const response = await fetch(`/api/sol/recentTransactions/${publicKey}`);
+    const data = await response.json();
+    return data.result;
+  } else {
+    const connection = new Connection(clusterApiUrl("devnet"));
+    const signatures = await connection.getSignaturesForAddress(
+      new PublicKey(publicKey)
+    );
+    return signatures;
+  }
 }
 
 export function unixTimestampToLocalDateTime(timestamp: number): string {
@@ -60,7 +77,8 @@ export function unixTimestampToLocalDateTime(timestamp: number): string {
 export async function createAndSendTransaction(
   base58PrivateKey: string,
   receiverPublicKey: string,
-  amount: number
+  amount: number,
+  network: Network
 ) {
   // Example connection
   const url: string = process.env.NEXT_PUBLIC_HELIUS_URL || "";
@@ -74,8 +92,11 @@ export async function createAndSendTransaction(
   console.log("amount", amount);
   console.log("lamports", amount * LAMPORTS_PER_SOL);
 
-  const connection = new Connection(url);
-
+  let connection = new Connection(url);
+  if (network === "devnet") connection = new Connection(clusterApiUrl("devnet"));
+  console.log(network)
+  console.log(network === "devnet")
+  console.log(connection.rpcEndpoint);
   const privateKeyBytes = base58.decode(base58PrivateKey);
   const sender = Keypair.fromSecretKey(privateKeyBytes);
   const receiverPubKey = new PublicKey(receiverPublicKey);
@@ -84,9 +105,9 @@ export async function createAndSendTransaction(
     (await connection.getBalance(sender.publicKey)) / LAMPORTS_PER_SOL
   );
 
-  const balance = (await connection.getBalance(sender.publicKey)) / LAMPORTS_PER_SOL;
-  if (balance <  amount) throw new Error("Insufficient Balance");
-
+  const balance =
+    (await connection.getBalance(sender.publicKey)) / LAMPORTS_PER_SOL;
+  if (balance < amount) throw new Error("Insufficient Balance");
 
   const { blockhash, lastValidBlockHeight } =
     await connection.getLatestBlockhash();

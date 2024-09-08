@@ -1,7 +1,7 @@
 "use client";
 import { useToast } from "@/components/ui/use-toast";
 import { createSolanaWallet } from "@/lib/helpers";
-import { Account } from "@/lib/interfaces";
+import { Account } from "@/types/interfaces";
 import { ToastAction } from "@radix-ui/react-toast";
 import { generateMnemonic, validateMnemonic } from "bip39";
 import { useEffect, useState } from "react";

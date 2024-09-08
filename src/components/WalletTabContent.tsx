@@ -1,7 +1,7 @@
 import React from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import WalletComponent from "./WalletComponent";
-import { Account } from "@/lib/interfaces";
+import { Account } from "@/types/interfaces";
 
 interface Props {
   account: Account;

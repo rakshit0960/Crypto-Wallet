@@ -13,21 +13,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import NetworkSelect from "@/components/ui/networkSelect";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WalletTabContent from "@/components/WalletTabContent";
 import { createSolanaWallet, fetchSolBalance } from "@/lib/helpers";
-import { Account } from "@/lib/interfaces";
+import { Account } from "@/types/interfaces";
 import { SymbolIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoSwapHorizontal } from "react-icons/io5";
+import { useStore } from "@/store/store";
+import AirdropRequest from "@/components/AirdropRequest";
 
 export default function Page() {
   const router = useRouter();
   const [account, SetAccount] = useState<Account | null>(null);
   const [walletIndex, setWalletIndex] = useState<number>(0);
   const [balance, setBalance] = useState<number | null>(null);
+  const network = useStore((state) => state.network);
 
   useEffect(() => {
     const localData = localStorage.getItem("AccountData");
@@ -49,10 +53,11 @@ export default function Page() {
 
   useEffect(() => {
     if (account == null) return;
-    fetchSolBalance(account.wallets[walletIndex].publicKey).then((balance) =>
-      setBalance(balance)
+    setBalance(null);
+    fetchSolBalance(account.wallets[walletIndex].publicKey, network).then(
+      (balance) => setBalance(balance)
     );
-  }, [walletIndex, account]);
+  }, [walletIndex, account, network]);
 
   function deleteWallet(privateKey: string) {
     if (account == null) return;
@@ -89,6 +94,11 @@ export default function Page() {
         <Card className="px-4 flex flex-col gap-10 w-[450px]">
           <CardHeader>
             <CardTitle className="flex flex-col items-center gap-2">
+              <div className="flex gap-2">
+
+              <NetworkSelect />
+              <AirdropRequest publicKey={account.wallets[walletIndex].publicKey} />
+              </div>
               <Image src={solanaImage} width={100} alt="" />
               <div className="flex gap-2">
                 {balance !== null ? (
@@ -110,7 +120,9 @@ export default function Page() {
               <SendButton
                 privateKey={account.wallets[walletIndex].privateKey}
               />
-              <ReceiveButton publicKey={account.wallets[walletIndex].publicKey} />
+              <ReceiveButton
+                publicKey={account.wallets[walletIndex].publicKey}
+              />
               <div className="flex flex-col items-center">
                 <Button className="rounded-full" variant={"outline"}>
                   <IoSwapHorizontal />

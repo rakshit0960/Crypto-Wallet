@@ -3,14 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchSolBalance } from "@/lib/helpers";
+import { useStore } from "@/store/store";
 import { useState } from "react";
 
 export default function Page() {
   const [publicKey, setPublicKey] = useState<string>("");
   const [balance, setBalance] = useState<string>("");
-
+  const network = useStore(state => state.network);
+  
   async function getBalance() {
-    setBalance((await fetchSolBalance(publicKey)).toString())
+    setBalance((await fetchSolBalance(publicKey, network)).toString())
   }
 
   return (

@@ -2,25 +2,27 @@ import {
   fetchSolRecentTransactions,
   unixTimestampToLocalDateTime,
 } from "@/lib/helpers";
+import { useStore } from "@/store/store";
 import { SymbolIcon } from "@radix-ui/react-icons";
+import { ConfirmedSignatureInfo } from "@solana/web3.js";
 import { Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 import CopyButton from "./CopyButton";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
-import { TransactionI } from "@/lib/interfaces";
 
 interface Props {
   publicKey: string;
 }
 
 export default function TransactionTabContent({ publicKey }: Props) {
-  const [Transactions, setTransactions] = useState<TransactionI[] | null>(null);
-
+  const [Transactions, setTransactions] = useState<ConfirmedSignatureInfo[] | null>(null);
+  const network = useStore(state => state.network);
   useEffect(() => {
-    fetchSolRecentTransactions(publicKey).then((data) => setTransactions(data));
-  }, []);
+    setTransactions(null)
+    fetchSolRecentTransactions(publicKey, network).then((data) => setTransactions(data));
+  }, [network, publicKey]);
 
   if (Transactions == null) {
     return (
@@ -39,7 +41,7 @@ export default function TransactionTabContent({ publicKey }: Props) {
               <Card key={index}>
                 <CardHeader>
                   <div className="px-4">
-                    {unixTimestampToLocalDateTime(transaction.blockTime)}
+                    {unixTimestampToLocalDateTime(transaction.blockTime || 0)}
                   </div>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
