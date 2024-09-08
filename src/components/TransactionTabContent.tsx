@@ -19,10 +19,12 @@ interface Props {
 export default function TransactionTabContent({ publicKey }: Props) {
   const [Transactions, setTransactions] = useState<ConfirmedSignatureInfo[] | null>(null);
   const network = useStore(state => state.network);
+  const forceUpdateCount = useStore(state => state.forceUpdateCount);
+
   useEffect(() => {
     setTransactions(null)
     fetchSolRecentTransactions(publicKey, network).then((data) => setTransactions(data));
-  }, [network, publicKey]);
+  }, [network, publicKey, forceUpdateCount]);
 
   if (Transactions == null) {
     return (

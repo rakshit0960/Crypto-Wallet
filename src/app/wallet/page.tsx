@@ -32,6 +32,7 @@ export default function Page() {
   const [walletIndex, setWalletIndex] = useState<number>(0);
   const [balance, setBalance] = useState<number | null>(null);
   const network = useStore((state) => state.network);
+  const forceUpdateCount = useStore(state => state.forceUpdateCount);
 
   useEffect(() => {
     const localData = localStorage.getItem("AccountData");
@@ -57,7 +58,7 @@ export default function Page() {
     fetchSolBalance(account.wallets[walletIndex].publicKey, network).then(
       (balance) => setBalance(balance)
     );
-  }, [walletIndex, account, network]);
+  }, [walletIndex, account, network, forceUpdateCount]);
 
   function deleteWallet(privateKey: string) {
     if (account == null) return;

@@ -33,6 +33,7 @@ export default function SendButton({ privateKey }: Props) {
       setNetwork: state.setNetwork,
     }))
   );
+  const forceUpdate = useStore(state => state.forceUpdate); 
 
   async function sendSol() {
     try {
@@ -59,7 +60,7 @@ export default function SendButton({ privateKey }: Props) {
       console.log("error", error);
       setSuccess(false);
     } finally {
-      setNetwork(network); // tiger re-render
+      forceUpdate() // re-render // tiger re-render
       setIsSending(false);
     }
   }

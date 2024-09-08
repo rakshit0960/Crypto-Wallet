@@ -24,6 +24,7 @@ const AirdropRequest = ({ publicKey }: Prop) => {
       setNetwork: state.setNetwork,
     }))
   );
+  const forceUpdate = useStore(state => state.forceUpdate)
 
   const requestAirdrop = async () => {
     setLoading(true);
@@ -51,6 +52,7 @@ const AirdropRequest = ({ publicKey }: Prop) => {
       setSuccess(false);
     } finally {
       setLoading(false);
+      forceUpdate() // re-render
     }
   };
 
