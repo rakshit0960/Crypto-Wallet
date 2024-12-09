@@ -43,15 +43,15 @@ export default function MnemonicDisplay({ mnemonic, setMnemonic }: Props) {
 
   return (
     <Card
-      className="dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer"
+      className="w-full sm:w-auto dark:hover:bg-gray-900 hover:bg-gray-300 cursor-pointer"
       onClick={() => copyText(mnemonic)}
     >
       <CardHeader></CardHeader>
-      <CardContent className="grid grid-cols-3 gap-3 ">
+      <CardContent className="grid grid-cols-3 gap-2 sm:gap-3">
         {mnemonic.split(" ").map((word, index) => {
           return (
             <div key={index}>
-              <div className="py-3 px-10 flex gap-2 text-lg">
+              <div className="py-2 sm:py-3 px-4 sm:px-10 flex gap-2 text-base sm:text-lg">
                 <span className="text-gray-500">{index}</span>
                 <span className="">{word}</span>
               </div>
@@ -60,7 +60,9 @@ export default function MnemonicDisplay({ mnemonic, setMnemonic }: Props) {
         })}
       </CardContent>
       <CardFooter className="flex justify-center">
-        <div className=" border-t px-[25%] pt-2">click anywhere to copy</div>
+        <div className="border-t w-full sm:w-auto px-4 sm:px-[25%] pt-2 text-sm sm:text-base text-center">
+          click anywhere to copy
+        </div>
       </CardFooter>
     </Card>
   );

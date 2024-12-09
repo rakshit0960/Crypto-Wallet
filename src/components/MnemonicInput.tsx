@@ -1,87 +1,71 @@
 "use client";
-import { useToast } from "@/components/ui/use-toast";
-import { createSolanaWallet } from "@/lib/helpers";
+import { validateMnemonic } from "@/lib/helpers";
 import { Account } from "@/types/interfaces";
-import { ToastAction } from "@radix-ui/react-toast";
-import { generateMnemonic, validateMnemonic } from "bip39";
-import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardFooter } from "./ui/card";
+import { Input } from "./ui/input";
+import { useToast } from "./ui/use-toast";
 
 export default function MnemonicInput() {
-  const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  const { toast } = useToast()
+  const [mnemonic, setMnemonic] = useState<string>("");
   const router = useRouter();
-  const [mnemonicArray, setMnemonicArray] = useState<string[]>(
-    Array.from(" ".repeat(12))
-  );
+  const { toast } = useToast();
 
-  useEffect(() => {
-    const handlePaste = (e: ClipboardEvent) => {
-      if (e.clipboardData == null) return;
-      let paste = e.clipboardData.getData("text");
-      console.log(paste);
-      let newMnemonicArray = [...mnemonicArray];
-      paste.split(' ').map(((word, index) => newMnemonicArray[index] = word));
-      setMnemonicArray(newMnemonicArray);
-    }
-    window.addEventListener('paste', handlePaste);
-
-    return () => window.removeEventListener('paste', handlePaste);
-  }, [])
-
-  const addWallet = () => {
-    let mnemonic = mnemonicArray.join(" ");
-
-    // generate random mnemonic if input is empty
-    if (!mnemonicArray.find((ch) => ch !== " ")) {
-      mnemonic = generateMnemonic();
-      setMnemonicArray(mnemonic.split(" "));
-    }
-
-    // if mnemonic is not valid show error tost
-    if (validateMnemonic(mnemonic) === false) {
+  const importWallet = () => {
+    if (mnemonic === "") {
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "The Mnemonic entered is not valid.",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-      })
+        title: "Error",
+        description: "Please enter your recovery phrase",
+      });
+      return;
+    }
+
+    if (!validateMnemonic(mnemonic)) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Invalid recovery phrase",
+      });
       return;
     }
 
     const account: Account = {
-      walletCount: 1,
+      walletCount: 0,
       mnemonic: mnemonic,
-      wallets: [createSolanaWallet(mnemonic, 0)]
-    }
-    localStorage.setItem('AccountData', JSON.stringify(account));
-    router.push('/wallet')
+      wallets: [],
+    };
+    localStorage.setItem("AccountData", JSON.stringify(account));
+    router.push("/wallet");
   };
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="grid grid-cols-3 gap-3">
-        {ids.map((id, index) => (
-          <div key={id} className="relative">
-            <input
-              type="text  "
-              className="py-2 px-1 pl-8 rounded-sm border"
-              value={mnemonicArray[index]}
-              onChange={(e) =>
-                setMnemonicArray((prevArray) => {
-                  let newArray = [...prevArray];
-                  newArray[index] = e.target.value;
-                  return newArray;
-                })
-              }
-            ></input>
-            <span className="absolute bottom-2 left-2">{id}</span>
-          </div>
-        ))}
-      </div>
-      <Button onClick={addWallet}>Add Wallet</Button>
-    </div>
+    <Card className="w-full max-w-[600px]">
+      <CardContent className="pt-6">
+        <textarea
+          value={mnemonic}
+          onChange={(e) => setMnemonic(e.target.value)}
+          placeholder="Enter your 12-word recovery phrase"
+          className="min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+        />
+      </CardContent>
+      <CardFooter className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+        <Button
+          onClick={importWallet}
+          className="w-full sm:w-auto"
+        >
+          Import Wallet
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/create")}
+          className="w-full sm:w-auto"
+        >
+          Create New Wallet
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

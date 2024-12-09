@@ -15,6 +15,7 @@ import base58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
 import { Wallet } from "../types/interfaces";
+import { validateMnemonic as bip39ValidateMnemonic } from "bip39";
 
 export function createSolanaWallet(
   mnemonic: string,
@@ -131,4 +132,8 @@ export async function createAndSendTransaction(
   ]);
 
   return signature;
+}
+
+export function validateMnemonic(mnemonic: string): boolean {
+  return bip39ValidateMnemonic(mnemonic);
 }
