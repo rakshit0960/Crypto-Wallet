@@ -119,8 +119,8 @@ export function TutorialDialog({ open, onOpenChange, network }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="p-2 md:p-4">
           <div className="flex items-center justify-center mb-4">
             {steps[currentStep].icon}
           </div>
@@ -129,17 +129,19 @@ export function TutorialDialog({ open, onOpenChange, network }: Props) {
           </DialogTitle>
         </DialogHeader>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="py-4"
-          >
-            {steps[currentStep].description}
-          </motion.div>
-        </AnimatePresence>
+        <div className="px-2 md:px-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="py-4"
+            >
+              {steps[currentStep].description}
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         <DialogFooter className="flex items-center justify-between mt-4">
           <div className="flex items-center gap-4">

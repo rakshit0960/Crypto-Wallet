@@ -22,16 +22,17 @@ export default function Page() {
   return (
     <>
       <Nav />
-      <div className="w-full h-screen grid place-content-center">
+      <div className="w-full min-h-screen grid place-content-center p-4">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
+          className="w-full max-w-[450px]"
         >
           <Card>
             <CardHeader>
               <motion.h1
-                className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl"
+                className="scroll-m-20 text-3xl md:text-4xl font-extrabold tracking-tight lg:text-5xl text-center"
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
                 transition={{ delay: 0.2 }}

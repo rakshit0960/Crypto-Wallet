@@ -73,7 +73,7 @@ const AirdropRequest = ({ publicKey }: Prop) => {
           </Button>
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-md mx-auto mt-10 p-6 shadow-md rounded-md">
+      <DialogContent className="w-[95vw] sm:max-w-[425px] mt-4 md:mt-10 p-4 md:p-6">
         <DialogTitle>
           <h1 className="text-xl font-semibold mb-4">Request SOL Airdrop</h1>
         </DialogTitle>

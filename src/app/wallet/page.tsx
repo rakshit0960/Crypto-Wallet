@@ -100,17 +100,16 @@ export default function Page() {
   return (
     <>
       <Nav />
-      <div className="w-full h-screen grid place-content-center">
-        <Card className="px-4 flex flex-col gap-10 w-[450px]">
+      <div className="w-full min-h-screen grid place-content-center p-4">
+        <Card className="px-2 md:px-4 flex flex-col gap-6 md:gap-10 w-full max-w-[450px]">
           <CardHeader>
             <CardTitle className="flex flex-col items-center gap-2">
               <div className="flex gap-2">
-
                 <NetworkSelect />
                 <AirdropRequest publicKey={account.wallets[walletIndex].publicKey} />
               </div>
-              <Image src={solanaImage} width={100} alt="" />
-              <div className="flex gap-2 items-center">
+              <Image src={solanaImage} width={80} height={80} alt="" className="w-20 md:w-24" />
+              <div className="flex gap-2 items-center text-lg md:text-xl">
                 {balance !== null ? (
                   <div>{balance}</div>
                 ) : (
@@ -124,10 +123,10 @@ export default function Page() {
                 SOL
               </div>
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription className="text-center text-xs md:text-sm break-all">
               {account.wallets[walletIndex].publicKey}
             </CardDescription>
-            <div className="flex justify-center gap-10">
+            <div className="flex justify-center gap-4 md:gap-10">
               <SendButton
                 privateKey={account.wallets[walletIndex].privateKey}
               />

@@ -71,10 +71,10 @@ export default function TransactionTabContent({ publicKey }: Props) {
                 transition={{ duration: 0.2, delay: index * 0.1 }}
               >
                 <Card className="group hover:shadow-md transition-shadow duration-200">
-                  <CardHeader className="py-3">
-                    <div className="px-4 flex justify-between items-center text-sm text-muted-foreground">
-                      <span>{unixTimestampToLocalDateTime(transaction.blockTime || 0)}</span>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <CardHeader className="py-2 md:py-3">
+                    <div className="px-2 md:px-4 flex justify-between items-center text-xs md:text-sm text-muted-foreground">
+                      <span className="truncate">{unixTimestampToLocalDateTime(transaction.blockTime || 0)}</span>
+                      <div className="flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         <CopyButton
                           text={transaction.signature}
                           message="Transaction signature copied"
@@ -92,9 +92,9 @@ export default function TransactionTabContent({ publicKey }: Props) {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="py-2">
-                    <div className="font-mono text-sm truncate">
-                      {transaction.signature.substring(0, 25)}...
+                  <CardContent className="py-1 md:py-2">
+                    <div className="font-mono text-xs md:text-sm truncate">
+                      {transaction.signature.substring(0, 15)}...
                     </div>
                   </CardContent>
                 </Card>
