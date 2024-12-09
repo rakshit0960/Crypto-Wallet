@@ -44,8 +44,8 @@ export function TutorialDialog({ open, onOpenChange, network }: Props) {
             To send SOL to another wallet:
           </p>
           <ol className="list-decimal list-inside space-y-1 text-sm">
-            <li>Click the "Send" button</li>
-            <li>Enter the recipient's wallet address</li>
+            <li>Click the &quot;Send&quot; button</li>
+            <li>Enter the recipient&apos;s wallet address</li>
             <li>Specify the amount to send</li>
             <li>Confirm the transaction</li>
           </ol>
@@ -102,7 +102,7 @@ export function TutorialDialog({ open, onOpenChange, network }: Props) {
             You can create and manage multiple wallets:
           </p>
           <ul className="list-disc list-inside space-y-1 text-sm">
-            <li>Click "Add Wallet" to create new ones</li>
+            <li>Click &quot;Add Wallet&quot; to create new ones</li>
             <li>Switch between wallets easily</li>
             <li>Each wallet has its own address and balance</li>
           </ul>

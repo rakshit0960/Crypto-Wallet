@@ -10,10 +10,12 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useShallow } from "zustand/react/shallow";
+import { Cloud } from "lucide-react";
 
 type Prop = {
   publicKey: string;
 };
+
 const AirdropRequest = ({ publicKey }: Prop) => {
   const [amount, setAmount] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
@@ -56,18 +58,27 @@ const AirdropRequest = ({ publicKey }: Prop) => {
     }
   };
 
+  if (network === "mainnet") return null;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">AirDrop</Button>
+        <div className="flex flex-col items-center">
+          <Button
+            variant="outline"
+            className="rounded-full flex items-center gap-2"
+          >
+            <Cloud className="h-[1.2rem] w-[1.2rem]" />
+            <span>Airdrop</span>
+          </Button>
+        </div>
       </DialogTrigger>
       <DialogContent className="max-w-md mx-auto mt-10 p-6 shadow-md rounded-md">
         <DialogTitle>
-
-        <h1 className="text-xl font-semibold  mb-4">Request SOL Airdrop</h1>
+          <h1 className="text-xl font-semibold mb-4">Request SOL Airdrop</h1>
         </DialogTitle>
 
-        <label htmlFor="amount" className="block text-sm font-medium ">
+        <label htmlFor="amount" className="block text-sm font-medium">
           Amount (SOL)
         </label>
         <Input
