@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { IoSwapHorizontal } from "react-icons/io5";
 import { useStore } from "@/store/store";
 import AirdropRequest from "@/components/AirdropRequest";
+import { TutorialDialog } from "@/components/TutorialDialog";
 
 export default function Page() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function Page() {
   const [balance, setBalance] = useState<number | null>(null);
   const network = useStore((state) => state.network);
   const forceUpdateCount = useStore(state => state.forceUpdateCount);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   useEffect(() => {
     const localData = localStorage.getItem("AccountData");
@@ -59,6 +61,13 @@ export default function Page() {
       (balance) => setBalance(balance)
     );
   }, [walletIndex, account, network, forceUpdateCount]);
+
+  useEffect(() => {
+    const tutorialCompleted = localStorage.getItem("tutorialCompleted");
+    if (!tutorialCompleted) {
+      setShowTutorial(true);
+    }
+  }, []);
 
   function deleteWallet(privateKey: string) {
     if (account == null) return;
@@ -97,19 +106,20 @@ export default function Page() {
             <CardTitle className="flex flex-col items-center gap-2">
               <div className="flex gap-2">
 
-              <NetworkSelect />
-              <AirdropRequest publicKey={account.wallets[walletIndex].publicKey} />
+                <NetworkSelect />
+                <AirdropRequest publicKey={account.wallets[walletIndex].publicKey} />
               </div>
               <Image src={solanaImage} width={100} alt="" />
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 {balance !== null ? (
                   <div>{balance}</div>
                 ) : (
-                  <SymbolIcon
-                    className="animate-spin h-100"
-                    width="23"
-                    height="23"
-                  />
+                  <div className="flex items-center gap-2">
+                    <SymbolIcon className="animate-spin" width="23" height="23" />
+                    <span className="text-sm text-muted-foreground animate-pulse">
+                      Loading balance...
+                    </span>
+                  </div>
                 )}{" "}
                 SOL
               </div>
@@ -133,38 +143,46 @@ export default function Page() {
             </div>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="Wallets">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="Wallets">Wallets</TabsTrigger>
-                <TabsTrigger value="Transaction">Transactions</TabsTrigger>
-              </TabsList>
-              <TabsContent value="Wallets">
-                <WalletTabContent
-                  account={account}
-                  setWalletIndex={setWalletIndex}
-                  walletIndex={walletIndex}
-                  deleteWallet={deleteWallet}
-                  setBalance={setBalance}
-                />
-                <div className="flex justify-around py-4">
-                  <Button onClick={addWallet}>Add Wallet</Button>
-                  <CopyButton
-                    text={account.wallets[walletIndex].privateKey}
-                    message="copied, private key"
-                  >
-                    <Button variant={"outline"}>copy Private Key</Button>
-                  </CopyButton>
-                </div>
-              </TabsContent>
-              <TabsContent value="Transaction">
-                <TransactionTabContent
-                  publicKey={account.wallets[walletIndex].publicKey}
-                />
-              </TabsContent>
-            </Tabs>
+            <div className="flex flex-col gap-4">
+              <Tabs defaultValue="Wallets">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="Wallets">Wallets</TabsTrigger>
+                  <TabsTrigger value="Transaction">Transactions</TabsTrigger>
+                </TabsList>
+                <TabsContent value="Wallets">
+                  <WalletTabContent
+                    account={account}
+                    setWalletIndex={setWalletIndex}
+                    walletIndex={walletIndex}
+                    deleteWallet={deleteWallet}
+                    setBalance={setBalance}
+                  />
+                </TabsContent>
+                <TabsContent value="Transaction">
+                  <TransactionTabContent
+                    publicKey={account.wallets[walletIndex].publicKey}
+                  />
+                </TabsContent>
+              </Tabs>
+
+              <div className="flex justify-around py-4 border-t">
+                <Button onClick={addWallet}>Add Wallet</Button>
+                <CopyButton
+                  text={account.wallets[walletIndex].privateKey}
+                  message="copied, private key"
+                >
+                  <Button variant={"outline"}>copy Private Key</Button>
+                </CopyButton>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
+      <TutorialDialog
+        open={showTutorial}
+        onOpenChange={setShowTutorial}
+        network={network}
+      />
     </>
   );
 }

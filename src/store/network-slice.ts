@@ -17,7 +17,7 @@ export const createNetworkSlice: StateCreator<
   [],
   NetworkSlice
 > = (set) => ({
-  network: "mainnet",
+  network: "devnet",
   setNetwork: (network) =>
     set((state) => {
       state.network = network;
